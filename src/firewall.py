@@ -39,7 +39,7 @@ def process_packet(pkt):
 
 
 nfqueue = NetfilterQueue()
-nfqueue.bind(1, print_and_accept)
+nfqueue.bind(1, process_packet)
 try:
     nfqueue.run()
 except KeyboardInterrupt:
