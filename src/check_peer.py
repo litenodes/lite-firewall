@@ -20,6 +20,10 @@ async def check_payed_no_throw(pub_key: bytes) -> bool:
 
 
 async def check_peer_handshake(pkt, pub_key: bytes, parsed):
+    if pub_key in whitelist:
+        logger.info(f'ACCEPT handshake: whitelisted: {pub_key.hex()}')
+        pkt.accept()
+        return
     result = await check_payed_no_throw(pub_key)
     if result:
         logger.info(f'ACCEPT: handshake payed: {pub_key.hex()}')
