@@ -10,7 +10,7 @@ from .config import SERVER_KEY_ID, DEBUG_LOGGING
 logger = logging.getLogger(__file__)
 
 
-async def main():
+def main():
     loop = asyncio.get_event_loop()
 
     def on_readable():
@@ -54,7 +54,7 @@ else:
 nfqueue = NetfilterQueue()
 nfqueue.bind(1, process_packet)
 try:
-    asyncio.run(main())
+    main()
 except KeyboardInterrupt:
     print('')
 
