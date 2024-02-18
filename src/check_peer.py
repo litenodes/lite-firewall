@@ -19,18 +19,17 @@ async def check_payed_no_throw(pub_key: bytes) -> bool:
     return result
 
 
-async def check_peer_handshake(pkt, pub_key: bytes):
+async def check_peer_handshake(pkt, pub_key: bytes, parsed):
     result = await check_payed_no_throw(pub_key)
     if result:
         logger.info(f'ACCEPT: handshake payed: {pub_key.hex()}')
-        await check_peer(pkt, pub_key)
+        await check_peer(pkt, pub_key, parsed)
     else:
         logger.debug(f'DROP: not payed: {pub_key.hex()}')
         pkt.drop()
 
 
-async def check_peer(pkt, pub_key: bytes):
-    parsed = parse_packet(pkt.get_payload())
+async def check_peer(pkt, pub_key: bytes, parsed):
     user = users.get(pub_key)
     now = int(time.time())
     if not user:
@@ -76,4 +75,4 @@ async def check_peer_no_key(pkt, parsed):
         logger.debug(f'DROP: no user found: {parsed["src"]}:{parsed["sport"]}')
         pkt.drop()
         return
-    await check_peer(pkt, user.user_pubkey)
+    await check_peer(pkt, user.user_pubkey, parsed)

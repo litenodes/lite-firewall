@@ -35,7 +35,7 @@ def process_packet(pkt):
     data = parsed['payload']
     if data[:32] == SERVER_KEY_ID:
         logger.debug(f'ACCEPT ADNL TCP handshake packet: {data[32:64].hex()}')
-        asyncio.get_event_loop().create_task(check_peer_handshake(pkt, data[32:64]))
+        asyncio.get_event_loop().create_task(check_peer_handshake(pkt, data[32:64], parsed))
         return
     logger.debug(f'ACCEPT other packet: {pkt_len} bytes')
     asyncio.get_event_loop().create_task(check_peer_no_key(pkt, parsed))
