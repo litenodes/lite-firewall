@@ -3,7 +3,7 @@ import asyncio
 import logging
 
 from .check_peer import check_peer_handshake, check_peer_no_key
-from .config import SERVER_KEY_ID
+from .config import SERVER_KEY_ID, DEBUG_LOGGING
 
 
 logger = logging.getLogger(__file__)
@@ -37,6 +37,11 @@ def process_packet(pkt):
     logger.debug(f'ACCEPT other packet: {pkt_len} bytes')
     asyncio.get_event_loop().create_task(check_peer_no_key(pkt))
 
+
+if DEBUG_LOGGING:
+    logging.basicConfig(level=logging.DEBUG)
+else:
+    logging.basicConfig(level=logging.INFO)
 
 nfqueue = NetfilterQueue()
 nfqueue.bind(1, process_packet)
