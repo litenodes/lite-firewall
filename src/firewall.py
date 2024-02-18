@@ -54,7 +54,7 @@ else:
 nfqueue = NetfilterQueue()
 nfqueue.bind(1, process_packet)
 try:
-    nfqueue.run()
+    asyncio.run(main())
 except KeyboardInterrupt:
     print('')
 
