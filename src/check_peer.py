@@ -3,8 +3,7 @@ import logging
 
 from .local_back_client import LocalBackendClient, ApiError
 from .config import LITE_BACK_PORT, RPS_LIMIT
-from .check_packet import parse_packet
-from .cache import users, whitelist, LsUser, get_user_by_src
+from .cache import whitelist, get_user_by_src, new_user, get_user
 
 
 client = LocalBackendClient(f'http://127.0.0.1:{LITE_BACK_PORT}/')
@@ -33,19 +32,11 @@ async def check_peer_handshake(pkt, pub_key: bytes, parsed):
 
 
 async def check_peer(pkt, pub_key: bytes, parsed):
-    user = users.get(pub_key)
+    user = get_user(pub_key)
     now = int(time.time())
+
     if not user:
-        user = LsUser(
-            user_pubkey=pub_key,
-            last_checked=now,
-            last_sec_req=0,
-            last_utime_used=now,
-            src_ip=parsed['src'],
-            src_port=parsed['sport'],
-            is_whitelisted=pub_key in whitelist,
-        )
-        users[pub_key] = user
+        new_user(pub_key, now, parsed['src'], parsed['sport'])
 
     if user.is_whitelisted:
         logger.info(f'ACCEPT: whitelisted: {pub_key.hex()}')
@@ -73,7 +64,7 @@ async def check_peer(pkt, pub_key: bytes, parsed):
 
 
 async def check_peer_no_key(pkt, parsed):
-    user = get_user_by_src(parsed['src'], parsed['sport'])
+    user = get_user_by_src(parsed['src'])
     if not user:
         logger.debug(f'DROP: no user found: {parsed["src"]}:{parsed["sport"]}')
         pkt.drop()
