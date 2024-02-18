@@ -32,7 +32,12 @@ def process_packet(pkt):
         pkt.accept()  # todo: check if packet is tcp handshake
         return
     parsed = parse_packet(payload)
+    if parsed['src'] == '127.0.0.1':
+        logger.debug(f'ACCEPT: local packet')
+        pkt.accept()
+        return
     data = parsed['payload']
+    logger.debug(f'packet {len(data)} bytes from {parsed["src"]}:{parsed["sport"]}')
     if data[:32] == SERVER_KEY_ID:
         logger.debug(f'ACCEPT ADNL TCP handshake packet: {data[32:64].hex()}')
         asyncio.get_event_loop().create_task(check_peer_handshake(pkt, data[32:64], parsed))

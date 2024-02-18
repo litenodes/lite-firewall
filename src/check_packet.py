@@ -15,5 +15,4 @@ def parse_packet(data: bytes):
         'sport': c.sport,
         'dport': c.dport
     }
-    logger.debug(f'packet {len(result["payload"])} bytes from {result["src"]}:{result["sport"]}')
     return result
