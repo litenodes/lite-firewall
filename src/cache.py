@@ -7,7 +7,7 @@ It is assumed that total users amount of one liteserver definitely won't exceed 
 So, we can store all the data in RAM. If this assumption is wrong, it can be implemented using Redis or Memcached.
 """
 
-users: typing.Dict[bytes: "LsUser"] = {}  # pub_key -> LsUser
+users: typing.Dict[bytes, "LsUser"] = {}  # pub_key -> LsUser
 whitelist = set()  # pub_key
 
 
