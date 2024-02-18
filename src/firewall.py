@@ -2,6 +2,7 @@ from netfilterqueue import NetfilterQueue
 import asyncio
 import logging
 
+from .check_packet import parse_packet
 from .check_peer import check_peer_handshake, check_peer_no_key
 from .config import SERVER_KEY_ID, DEBUG_LOGGING
 
@@ -30,12 +31,14 @@ def process_packet(pkt):
         logger.debug('ACCEPT: tcp handshake packet')
         pkt.accept()  # todo: check if packet is tcp handshake
         return
-    if payload[:32] == SERVER_KEY_ID:
-        logger.debug(f'ACCEPT ADNL TCP handshake packet: {payload[32:64].hex()}')
-        asyncio.get_event_loop().create_task(check_peer_handshake(pkt, payload[32:64]))
+    parsed = parse_packet(payload)
+    data = parsed['payload']
+    if data[:32] == SERVER_KEY_ID:
+        logger.debug(f'ACCEPT ADNL TCP handshake packet: {data[32:64].hex()}')
+        asyncio.get_event_loop().create_task(check_peer_handshake(pkt, data[32:64]))
         return
     logger.debug(f'ACCEPT other packet: {pkt_len} bytes')
-    asyncio.get_event_loop().create_task(check_peer_no_key(pkt))
+    asyncio.get_event_loop().create_task(check_peer_no_key(pkt, parsed))
 
 
 if DEBUG_LOGGING:

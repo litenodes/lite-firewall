@@ -70,8 +70,7 @@ async def check_peer(pkt, pub_key: bytes):
     pkt.accept()
 
 
-async def check_peer_no_key(pkt):
-    parsed = parse_packet(pkt.get_payload())
+async def check_peer_no_key(pkt, parsed):
     user = get_user_by_src(parsed['src'], parsed['sport'])
     if not user:
         logger.debug(f'DROP: no user found: {parsed["src"]}:{parsed["sport"]}')
